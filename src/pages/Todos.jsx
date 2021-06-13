@@ -1,32 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { Link, Route, useParams, useRouteMatch } from "react-router-dom";
+import React, {useEffect, useState} from 'react';
+import TodoForm from '../components/TodoForm';
+import TodoItem from '../components/TodoItem';
+import {Link, Route, useParams, useRouteMatch} from "react-router-dom";
+import {connect} from "react-redux";
+import {addNewTodo, removeTodo, fetchTodos} from "../redux/actions/todos";
 
-function Todos() {
-  const [todos, setTodos] = useState([]);
-  const [newTodo, setNewTodo] = useState("");
-  const [completed, setCompleted] = useState("");
+function Todos ({todoData, fetchTodos, removeTodo, addNewTodo}) {
 
-  useEffect(() => {
-    async function fetchData() {
-      const res = await fetch("https://jsonplaceholder.typicode.com/todos");
-
-      const json = await res.json();
-      setTodos(json);
-    }
-
-    fetchData();
-  }, []);
-
-  const { url } = useRouteMatch();
+  useEffect(() => {fetchTodos()}, [fetchTodos]);
 
   const Todo = () => {
-    const { id } = useParams();
+    const {id} = useParams();
     const [todo, setTodo] = useState({});
 
     useEffect(() => {
       async function fetchData() {
         const res = await fetch(
-          `https://jsonplaceholder.typicode.com/todos/${id}`
+            `https://jsonplaceholder.typicode.com/todos/${id}`
         );
 
         const json = await res.json();
@@ -37,84 +27,53 @@ function Todos() {
     }, [id]);
 
     return (
-      <div className="card" style={{ width: "300px" }}>
-        <div className="card-body">
-          <h5 className="card-title">{todo.title}</h5>
-          <h6 className="card-sub-title mb-2 text-muted">{todo.completed}</h6>
+        <div className="card" style={{width: '300px'}}>
+          <div className="card-body">
+            <h5 className="card-title">{todo.title}</h5>
+          </div>
         </div>
-      </div>
     );
-  };
-
-  const deleteTodo = (id) => {
-    const newList = todos.filter((item) => item.id !== id);
-    setTodos(newList);
-  };
-
-  const addTodo = (e) => {
-    e.preventDefault();
-
-    fetch("https://jsonplaceholder.typicode.com/todos", {
-      method: "POST",
-      body: JSON.stringify({
-        userId: Date.now(),
-        id: Date.now() + 1,
-        title: newTodo,
-        completed: completed,
-      }),
-      headers: {
-        "Content-type": "application/json; charset=UTF-8",
-      },
-    })
-      .then((response) => response.json())
-      .then((json) => setTodos([...todos, json]));
-    console.log(todos);
-  };
+  }
 
   return (
-    <div className="users-page">
-      <div className="list-group">
-        {todos.map((todo) => (
-          <div className="list-group-item users" key={todo.id}>
-            <Link to={`${url}/${todo.id}`} className="btn btn-secondary btn-sm">
-              {todo.title}
-            </Link>
-            <button onClick={() => deleteTodo(todo.id)}>X</button>
-            {todo.title}
-          </div>
-        ))}
-        <form onSubmit={addTodo} className="form-inline">
-          <h4> Please, add new task</h4>
-          <div className="form-group mb-2">
-            <div>Enter title</div>
-            <input
-              id="title"
-              type="text"
-              className="form-control"
-              value={newTodo}
-              onClick={() => (document.getElementById("title").value = "")}
-              onChange={(e) => setNewTodo(e.target.value)}
-            />
-            <div>Enter if completed</div>
-            <input
-              id="completed"
-              type="text"
-              className="form-control"
-              value={completed}
-              onClick={() => (document.getElementById("completed").value = "")}
-              onChange={(e) => setCompleted(e.target.value)}
-            />
-          </div>
-          <button type="submit" className="btn btn-primary mb-2">
-            Add
-          </button>
-        </form>
+      <div className="users-page">
+        <div className="list-group">
+          <TodoForm addNewTodo={addNewTodo}/>
+          {
+            todoData && todoData.loading ?
+                (<h2>...loading</h2>) :
+                todoData && todoData.error ?
+                    (<h2>{todoData.error}</h2>) :
+                    todoData && todoData.todos && todoData.todos.map((todoItem, index) =>
+                <TodoItem todoItem={todoItem}
+                          id={todoItem.id}
+                          removeTodo={removeTodo}
+                          index={index}
+                          key={index}/>)
+          }
+        </div>
+        <Route path="/todos/:id">
+          <Todo />
+        </Route>
       </div>
-      <Route path="/todos/:id">
-        <Todo />
-      </Route>
-    </div>
   );
 }
 
-export default Todos;
+const mapStateToProps = state => {
+  return {
+    todoData: state.todos
+  }
+}
+
+const mapDispatchToProps = dispatch => {
+  return {
+    fetchTodos: () => dispatch(fetchTodos()),
+    addNewTodo: (todo) => dispatch(addNewTodo(todo)),
+    removeTodo: (id) => dispatch(removeTodo(id)),
+  }
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+) (Todos);

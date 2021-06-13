@@ -1,6 +1,6 @@
 import React from 'react';
 import NavBar from 'react-bootstrap/Navbar';
-import { Nav, Container, Button, NavDropdown } from 'react-bootstrap';
+import { Nav, Container} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components';
 

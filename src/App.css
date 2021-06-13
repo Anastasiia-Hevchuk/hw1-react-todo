@@ -1,27 +1,55 @@
 .app {
-  background: #209cee;
+  background: azure;
   height: 100vh;
   padding: 30px;
 }
 
 .todo-list, .user-list {
-  background: #e8e8e8;
+  background: lightseagreen;
   border-radius: 4px;
   max-width: 400px;
   padding: 5px;
   margin-right: 40px;
 }
 
-.todo, .user {
-  align-items: center;
+.container {
+  display: flex;
+  width: 100%;
+}
+
+.todo, .user, .input {
   background: #fff;
   border-radius: 3px;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
-  display: flex;
   font-size: 12px;
-  justify-content: space-between;
-  margin-bottom: 6px;
   padding: 3px 10px;
+  width: 95%;
+  margin: 3px 5px 3px 0;
+}
+
+.input {
+  width: 85%;
+  border: none;
+  margin-left: 15px;
+}
+
+.input::placeholder {
+  text-align: left;
+  padding-left: 5px;
+
+}
+
+.input:focus {
+  border: 1px solid;
+  outline: none;
+}
+
+.x-btn {
+  background-color: darkseagreen;
+  border-radius: 50%;
+  border: none;
+  padding: 3px 8px;
+  margin-left: 10px;
 }
 
 .users {
@@ -33,4 +61,19 @@
 .users-page {
   display: flex;
   justify-content: space-between;
+}
+
+.nav-item {
+  padding-left: 15px;
+}
+.nav-link {
+  font-size: x-large;
+
+}
+
+.btn.btn-primary.mb-2 {
+  margin-left: 10px;
+  padding: 8px 15px;
+  background-color: darkcyan;
+  border: none;
 }
